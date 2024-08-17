@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coding Questions Generator</title>
+</head>
+<body>
+    <h1>Generate Coding Questions</h1>
+    <form id="question-form">
+        <label for="easy">Number of Easy Questions:</label>
+        <input type="number" id="easy" name="easy" min="0" required><br><br>
+
+        <label for="medium">Number of Medium Questions:</label>
+        <input type="number" id="medium" name="medium" min="0" required><br><br>
+
+        <label for="difficult">Number of Difficult Questions:</label>
+        <input type="number" id="difficult" name="difficult" min="0" required><br><br>
+
+        <button type="submit">Generate</button>
+    </form>
+    <h2>Selected Questions</h2>
+    <div id="questions">
+    </div>
+    
+        <script>
+
+            document.getElementById('question-form').onsubmit = async function(event) {
+                event.preventDefault();
+    
+                const formData = new FormData(this);
+                const response = await fetch('/generate', {
+                    method: 'POST',
+                    body: formData
+                });
+    
+                const data = await response.json();
+                const questionsDiv = document.getElementById('questions');
+                questionsDiv.innerHTML = '';
+    
+                for (const [difficulty, questions] of Object.entries(data)) {
+                    const difficultyHeader = document.createElement('h3');
+                    difficultyHeader.textContent = `${difficulty.charAt(0).toUpperCase() + difficulty.slice(1)} Questions:`;
+                    questionsDiv.appendChild(difficultyHeader);
+    
+                    const questionList = document.createElement('ol');
+                    questions.forEach(question => {
+                        const listItem = document.createElement('li');
+                        listItem.textContent = question;
+                        questionList.appendChild(listItem);
+                    });
+    
+                    questionsDiv.appendChild(questionList);
+                }
+            }
+        </script>
+</body>
+</html>
